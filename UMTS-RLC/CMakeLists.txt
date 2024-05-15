@@ -20,7 +20,11 @@ add_pthread(${PROJECT_NAME} ${WIN_PTHREAD_PREBUILD_PATH})
 
 #for URlc.h being visible by module caller
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} )
-target_link_libraries(${PROJECT_NAME}  Ws2_32)
+
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")  
+    target_link_libraries(${PROJECT_NAME}  Ws2_32)
+endif()
 
 
 

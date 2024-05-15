@@ -7,7 +7,7 @@
 #define _TIMESPEC_DEFINED
 #include <windows.h>
 #define SLEEP Sleep
-#elif unix
+#elif __linux
 #include<unistd.h> //for sleep
 #define SLEEP msleep
 #endif

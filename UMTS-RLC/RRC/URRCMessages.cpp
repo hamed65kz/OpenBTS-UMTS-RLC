@@ -2,7 +2,7 @@
 #include "../Utilities/Logger.h"
 #include "../configurations.h"
 #include "../Utilities/Logger.h"
-#include "Configs\RrcMasterChConfig.h"
+#include "Configs/RrcMasterChConfig.h"
 #include "../Ue/UEInfo.h"
 #include "../RRC/URRC.h"
 #include "../RLC/Tran/URlcTransUm.h"

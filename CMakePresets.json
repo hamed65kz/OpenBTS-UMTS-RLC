@@ -16,7 +16,7 @@
             }
         },
         {
-            "name": "GCC",
+            "name": "GCC-Debug",
             "displayName": "GCC 6.3.0 mingw32",
             "description": "Using compilers: C = C:\\MinGW\\bin\\gcc.exe, CXX = C:\\MinGW\\bin\\g++.exe",
             "generator": "MinGW Makefiles",
@@ -26,6 +26,19 @@
                 "CMAKE_C_COMPILER": "C:/MinGW/bin/gcc.exe",
                 "CMAKE_CXX_COMPILER": "C:/MinGW/bin/g++.exe",
                 "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "GCC-Release",
+            "displayName": "GCC 6.3.0 mingw32",
+            "description": "Using compilers: C = C:\\MinGW\\bin\\gcc.exe, CXX = C:\\MinGW\\bin\\g++.exe",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "C:/MinGW/bin/gcc.exe",
+                "CMAKE_CXX_COMPILER": "C:/MinGW/bin/g++.exe",
+                "CMAKE_BUILD_TYPE": "Release"
             }
         }
     ],
@@ -46,7 +59,13 @@
             "name": "gcc-debug",
             "description": "",
             "displayName": "",
-            "configurePreset": "GCC"
+            "configurePreset": "GCC-Debug"
+        },
+        {
+            "name": "gcc-release",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "GCC-Release"
         }
     ]
 }
