@@ -11,7 +11,7 @@
 //#include <time.h>
 
 
-#include "Configs\RrcMasterChConfig.h"
+#include "Configs/RrcMasterChConfig.h"
 
 extern RrcMasterChConfig *gRrcCcchConfig;	// Defines TrCh, SRB0 for UE in unconnected mode.
 extern RrcMasterChConfig *gRrcDcchConfig;	// Defines TrCh, SRB for UE in connected mode.

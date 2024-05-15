@@ -21,7 +21,8 @@
 //#include <time.h>
 
 struct timeval_t
-{ /* Nominally a BSD or POSIX.1 structure, (with tv_sec declared as
+{ 
+	/* Nominally a BSD or POSIX.1 structure, (with tv_sec declared as
   * time_t), but subverted by Microsoft with tv_sec declared as long,
   * to avoid __time32_t vs. __time64_t ambiguity; (tv_sec is ALWAYS
   * a 32-bit entity in Windows' use of this structure).  Addionally,
@@ -37,8 +38,6 @@ struct timezone {
 	int tz_dsttime;
 };
 
-
-
 int gettimeofday(struct timeval_t* tv, struct timezone* tz);
 
 void usleep(long long  usec);
@@ -46,7 +45,8 @@ void usleep(long long  usec);
 #else
 #include <unistd.h>
 #include "sys/time.h"
-typedef timeval timeval_t;
+//typedef timeval timeval_t;
+#define timeval_t timeval
 #endif
 
 #include <stdint.h>

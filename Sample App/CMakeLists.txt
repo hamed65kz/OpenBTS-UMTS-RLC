@@ -1,12 +1,3 @@
-function(detect_target_build_arch)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        set(ARCH "X86" PARENT_SCOPE)
-    elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(ARCH "X64" PARENT_SCOPE)
-    else()
-        set(ARCH "Unknown" PARENT_SCOPE)
-    endif()
-endfunction()
 
 cmake_minimum_required(VERSION 3.28.0)
 project(UMTS-RLC-APP VERSION 0.1.0 LANGUAGES C CXX)
@@ -15,25 +6,12 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 set(CMAKE_CXX_EXTENSIONS Off)
 
-#include_directories(${CMAKE_SOURCE_DIR}/pthreads-w32-2-9-1-release/Pre-built.2/include)
-#link_directories(${CMAKE_SOURCE_DIR}/pthreads-w32-2-9-1-release/Pre-built.2/lib/x86)
-
-#add_subdirectory(Utilities)
-
-
 add_executable(${PROJECT_NAME} UMTS-RLC.cpp ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pthreads-w32-2-9-1-release/Pre-built.2/include )
-
-detect_target_build_arch()
-if(ARCH STREQUAL "X86")
-    target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pthreads-w32-2-9-1-release/Pre-built.2/lib/x86)
-    message(STATUS "Building Platform is x86")
-elseif(ARCH STREQUAL  "X64")
-    target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pthreads-w32-2-9-1-release/Pre-built.2/lib/x64)
-    message(STATUS "Building Platform is x64")
-endif()
+include(../UMTS-RLC/CMake/utilities.cmake)
+set(WIN_PTHREAD_PREBUILD_PATH ${CMAKE_CURRENT_SOURCE_DIR}/pthreads-w32-2-9-1-release/Pre-built.2)
+add_pthread(${PROJECT_NAME} ${WIN_PTHREAD_PREBUILD_PATH})
 
 
 target_link_libraries(${PROJECT_NAME}  UMTSRLCLib)
-target_link_libraries(${PROJECT_NAME}  pthreadVC2)
+

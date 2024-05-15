@@ -1,6 +1,6 @@
 #include "MACEngine.h"
-#include "..\Ue\UEInfo.h"
-#include "..\RRC\URRC.h"
+#include "../Ue/UEInfo.h"
+#include "../RRC/URRC.h"
 
 // Just look for a pdu, any pdu, and send it.
 vector<ByteVector*> flushUE()

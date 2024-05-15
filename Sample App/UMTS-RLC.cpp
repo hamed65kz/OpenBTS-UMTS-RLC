@@ -5,7 +5,13 @@
 #ifdef _WIN32
 #define HAVE_STRUCT_TIMESPEC // for resolve timespec redefinition,, msvc version                             // should be higher than vs2013
 #define _TIMESPEC_DEFINED
+#include <windows.h>
+#define SLEEP Sleep
+#elif unix
+#include<unistd.h> //for sleep
+#define SLEEP msleep
 #endif
+
 
 #include "URlc.h"
 
@@ -29,7 +35,7 @@ void *macTX(void *) {
            << "\n";
       delete item;
     }
-    Sleep(1000);
+    SLEEP(1000);
   } 
   pthread_exit(0);
   return NULL;
@@ -55,7 +61,7 @@ void *macCCCHRX(void *) {
       cout << "Rx CCCH Pdu Received on MAC\n";
     }
     URlc::macPushUpRxCCCH(ccchpdu);
-    Sleep(1000);
+    SLEEP(1000);
   }
   pthread_exit(0);
   return NULL;
@@ -82,7 +88,7 @@ void *macDCCHRX(void *) {
     RbId rb = 3;
     cout << "Rx DCCH Pdu Received on MAC\n";
     URlc::macPushUpRXDCCH(dcchpdu, rb, UEid);
-    Sleep(1000);
+    SLEEP(1000);
     //}
   }
   //}
@@ -106,7 +112,7 @@ void *rrcRxCCCH(void *) {
       }
     }
     // delete pdu;
-    Sleep(1000);
+    SLEEP(1000);
   }
   pthread_exit(0);
   return NULL;
@@ -116,7 +122,7 @@ void *rrcRxDCCH(void *) {
     RrcUplinkMessage *pdu = URlc::rrcRecvDCCH();
     cout << "Rx DCCH Pdu Received on RRC\n";
     delete pdu;
-    Sleep(1000);
+    SLEEP(1000);
   }
   pthread_exit(0);
 }
@@ -128,7 +134,7 @@ void *rrcTxCCCH(void *) {
     sprintf(tmp, "ccch%6d", count);
     ByteVector ccchpdu = ByteVector(tmp, 10);
     // URlc::rrcSendCCCH(ccchpdu,"deschamed");
-    Sleep(1000);
+    SLEEP(1000);
     count++;
   }
   pthread_exit(0);
@@ -142,7 +148,7 @@ void *rrcTxDCCH(void *) {
     sprintf(tmp, "dcch%6d", count);
     ByteVector dcchpdu = ByteVector(tmp, 10);
     URlc::rrcSendDCCH(dcchpdu, 1, 3, "");
-    Sleep(1000);
+    SLEEP(1000);
     count++;
   }
   pthread_exit(0);
