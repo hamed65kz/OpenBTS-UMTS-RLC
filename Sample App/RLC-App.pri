@@ -7,3 +7,4 @@ include(../umts-rlc-lib.pri)
 SOURCES +=$$PWD/UMTS-RLC.cpp
 
 TARGET=RLCAPP
+DESTDIR=$$PWD/../out
