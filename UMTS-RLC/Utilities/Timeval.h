@@ -33,10 +33,14 @@ struct timeval_t
 	long tv_sec;		/* whole number of seconds in interval */
 	long tv_usec; 	/* additional fraction as microseconds */
 };
+
+#ifndef _TIMEZONE_DEFINED /* also in sys/time.h */
+#define _TIMEZONE_DEFINED
 struct timezone {
-	int tz_minuteswest;
-	int tz_dsttime;
+    int tz_minuteswest;
+    int tz_dsttime;
 };
+#endif
 
 int gettimeofday(struct timeval_t* tv, struct timezone* tz);
 

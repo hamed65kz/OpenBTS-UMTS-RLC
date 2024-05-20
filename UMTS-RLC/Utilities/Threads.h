@@ -18,8 +18,8 @@
 #define THREADS_H
 
 #ifdef _WIN32
-#define HAVE_STRUCT_TIMESPEC // for resolve timespec redefinition,, msvc version should be higher than vs2013
-#define _TIMESPEC_DEFINED
+//#define HAVE_STRUCT_TIMESPEC // for resolve timespec redefinition,, msvc version should be higher than vs2013
+//#define _TIMESPEC_DEFINED
 #endif
 
 

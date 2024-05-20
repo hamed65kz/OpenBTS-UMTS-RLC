@@ -25,7 +25,7 @@
 char *LoadFromBinaryCharFile(const char *Path, unsigned int &InputFileLength);
 
 void *macTX(void *) {
-
+return NULL;
   while (true) {
     vector<ByteVector *> pdus = URlc::macReadTx();
     for (size_t i = pdus.size(); i >= 1; i--) {
@@ -41,7 +41,7 @@ void *macTX(void *) {
   return NULL;
 }
 void *macCCCHRX(void *) {
-  return NULL;
+
   while (true) {
     BitVector *ccchpdu;
     int sendRRCRequest = rand() % 2;
@@ -67,6 +67,7 @@ void *macCCCHRX(void *) {
   return NULL;
 }
 void *macDCCHRX(void *) {
+
   // while(true)
   //{
   for (size_t i = 1; i <= 110; i++) {
@@ -163,21 +164,25 @@ bool macEnabled = true;
 bool rrcEnabled = true;
 
 char *LoadFromBinaryCharFile(const char *Path, unsigned int &InputFileLength) {
-  // FILE* fod;
-  // fopen_s(&fod, Path, "rb");
-  FILE *fod = fopen(Path, "rb");
-  fseek(fod, 0, SEEK_END);
-  int bytelength = ftell(fod);
-  fseek(fod, 0, SEEK_SET);
+    // FILE* fod;
+    // fopen_s(&fod, Path, "rb");
 
-  InputFileLength = bytelength / sizeof(char);
+    FILE *fod = fopen(Path, "rb");
+    if(fod){
+        fseek(fod, 0, SEEK_END);
+        int bytelength = ftell(fod);
+        fseek(fod, 0, SEEK_SET);
 
-  char *InPutFile = (char *)malloc(sizeof(char) * InputFileLength);
-  memset(InPutFile, 0, sizeof(char) * InputFileLength);
-  size_t size = fread(InPutFile, sizeof(char), InputFileLength, fod);
-  fclose(fod);
+        InputFileLength = bytelength / sizeof(char);
 
-  return InPutFile;
+        char *InPutFile = (char *)malloc(sizeof(char) * InputFileLength);
+        memset(InPutFile, 0, sizeof(char) * InputFileLength);
+        size_t size = fread(InPutFile, sizeof(char), InputFileLength, fod);
+        fclose(fod);
+        return InPutFile;
+    }
+    return NULL;
+
 }
 int main() {
   unsigned int l = 0;
