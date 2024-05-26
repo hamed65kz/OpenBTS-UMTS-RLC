@@ -134,6 +134,7 @@ void writeHighSideCcch(ByteVector &sdu, const string descr)
 
 ByteVector * macReadFromCCCH(){
 	ByteVector *pdu = mCcchRlc->rlcReadLowSide();
+
 	return pdu;
 }
 void setupDlRlcCCCH(){

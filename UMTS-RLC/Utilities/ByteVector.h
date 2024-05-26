@@ -6,7 +6,7 @@
 #include "BitVector.h"
 #include "../shareTypes.h"
 #include <sstream>
-
+namespace rlc{
 #if _WIN32
     #include <winsock.h>
 #else
@@ -340,5 +340,5 @@ public:
 std::ostream& operator<<(std::ostream& os, const ByteVector& vec);
 
 
-
+}
 #endif

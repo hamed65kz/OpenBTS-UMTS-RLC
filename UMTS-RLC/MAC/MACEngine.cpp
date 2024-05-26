@@ -3,14 +3,14 @@
 #include "../RRC/URRC.h"
 
 // Just look for a pdu, any pdu, and send it.
-vector<ByteVector*> flushUE()
+vector<RlcPdu*> flushUE()
 {
 	UEInfo *uep =nullptr;
 	//printf("BEFORE LOCK\n");
 	ScopedLock lock(gRrc.mUEListLock);
 	//printf("AFTER LOCK\n");
 	//printf("LIST size=%d\n",gRrc.mUEList.size());
-	vector<ByteVector*> pdus;
+    vector<RlcPdu*> pdus;
 	RN_FOR_ALL(Rrc::UEList_t, gRrc.mUEList, uep) {
 		//if (uep->ueGetState() != stCELL_FACH) { continue; }
 		//if (gMacSwitch.pickFachMac(uep->mURNTI) != this) { continue; }//HKZ
@@ -27,16 +27,44 @@ vector<ByteVector*> flushUE()
 			// For this case we send a reference instead of a pointer to allocated.
 			//MaccTbDl tb(macGetDlTrBkSz(), pdu, uep, rbid);//HKZ
 			//sendDownstreamTb(tb);//HKZ
-			pdus.push_back(pdu);
+
+            RlcSdu* rlcpdu= new RlcSdu();
+            rlcpdu->payload_length = pdu->size();
+            rlcpdu->payload = new char[rlcpdu->payload_length]();
+            memcpy(rlcpdu->payload,pdu->begin(),rlcpdu->payload_length);
+            rlcpdu->rbid = rbid;
+            rlcpdu->urnti = uep->mURNTI;
+            rlcpdu->crnti = uep->mCRNTI;
+            rlcpdu->payload_string = pdu->hexstr();
+            pdu->clear();
+            delete pdu;
+
+            pdus.push_back(rlcpdu);
+
 			//delete pdu;
 			//return pdus;
 		}
 	}
 	return pdus;
 }
-ByteVector* flushQ()
+RlcPdu* flushQ()
 {
 	// Now we can treat the ccch rlc like any other.
-	ByteVector *pdu = macReadFromCCCH();
-	return pdu;
+    ByteVector *pdu = macReadFromCCCH();
+    if(pdu){
+    RlcPdu* rlcpdu= new RlcPdu();
+
+    rlcpdu->payload_length = pdu->size();
+    rlcpdu->payload = new char[rlcpdu->payload_length]();
+    memcpy(rlcpdu->payload,pdu->begin(),rlcpdu->payload_length);
+    rlcpdu->payload_string = pdu->hexstr();
+    rlcpdu->rbid = -1;
+    rlcpdu->urnti = -1;
+    rlcpdu->crnti = -1;
+    pdu->clear();
+    delete pdu;
+
+    return rlcpdu;
+    }
+    return nullptr;
 }

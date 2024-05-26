@@ -129,7 +129,9 @@ template <class T> class Vector  {
 	//@}
 
 	/** Destroy a Vector, deleting held memory. */
-	virtual ~Vector() { clear(); }
+    virtual ~Vector() {
+        clear();
+    }
 
 
 

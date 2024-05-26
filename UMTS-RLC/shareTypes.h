@@ -20,8 +20,22 @@ const RbId SRB1 = 1;
 const RbId SRB2 = 2;
 const RbId SRB3 = 3;
 const RbId SRB4 = 4;
+enum UeIdType{
+    URNTI,
+    CRNTI
+};
 
+class RlcSdu{
+  public:
+    char* payload;
+    int payload_length;
+    int rbid;
+    int crnti;
+    int urnti;
+    std::string payload_string;
+};
 
+typedef RlcSdu RlcPdu;
 // We dont bother to define *= /= etc.; you'll have to convert: a*=b; to: a=a*b;
 #define _INITIALIZED_SCALAR_FUNCS(Classname,Basetype,Init) \
 	Classname() : value(Init) {} \

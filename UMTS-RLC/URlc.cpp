@@ -14,10 +14,13 @@ void URlc::initRLCConfigs()
 	rrcInitCommonCh(UMTS_PRACH_SF,UMTS_SCCPCH_SF);
 	setupDlRlcCCCH();
 }
-void URlc::macPushUpRXDCCH(BitVector pdu, RbId rbid, int UEid){
+void URlc::macPushUpRXDCCH(char* pdu, int pdu_len, RbId rbid, UeIdType id_type , int UEid){
 	//URNTI = 0;
-	//CRNTI = 1;
-	int ueidtype = 0;
+    //CRNTI = 1;
+    int ueidtype = 0;// =urnti
+    if(id_type == UeIdType::CRNTI)
+        ueidtype =1;
+
 	UEInfo *uep = gRrc.findUe(ueidtype, UEid);
 	if (uep == NULL) {
 		LOG(INFO) << "Could not find UE with id " << UEid;
@@ -27,39 +30,81 @@ void URlc::macPushUpRXDCCH(BitVector pdu, RbId rbid, int UEid){
 	else{
 		int a = 0;
 	}
-	uep->ueWriteLowSide(rbid, pdu, stCELL_FACH);
+
+    BitVector dcchpdu;
+    Vector<char> v1 = Vector<char>(pdu_len);
+    for (int j =0; j < pdu_len; j++) {
+      v1[j] = pdu[j];
+    }
+
+    dcchpdu = BitVector(v1);
+
+    uep->ueWriteLowSide(rbid, dcchpdu, stCELL_FACH);
 }
 
-void URlc::macPushUpRxCCCH(BitVector *pdu){
-	RxCCCHQueue.push(pdu);
+void URlc::macPushUpRxCCCH(char* pdu, int pdu_len){
+    BitVector* ccchpdu;
+    Vector<char> v1 = Vector<char>(pdu_len);
+    for (int j =0; j < pdu_len; j++) {
+      v1[j] = pdu[j];
+    }
+
+    ccchpdu = new BitVector(v1);
+    RxCCCHQueue.push(ccchpdu);
 }
 
 
-BitVector* URlc::rrcRecvCCCH()
+RlcSdu* URlc::rrcRecvCCCH()
 {
 	if (RxCCCHQueue.size() > 0)
 	{
 		BitVector* first = RxCCCHQueue.front();
 		RxCCCHQueue.pop();
-		return first;
+
+        RlcSdu* sdu= new RlcSdu();
+
+        sdu->payload_length = first->size();
+        sdu->payload = new char[sdu->payload_length]();
+        memcpy(sdu->payload,first->begin(),sdu->payload_length);
+        sdu->payload_string = first->hexstr();
+        sdu->rbid = -1;
+        sdu->urnti = -1;
+        sdu->crnti = -1;
+        first->clear();
+        delete first;
+
+        return sdu;
 	}
 	return nullptr;
 }
+
 /**
 Blocking read.
 @return Pointer to object (will not be NULL).
 */
-RrcUplinkMessage* URlc::rrcRecvDCCH(){
+RlcSdu* URlc::rrcRecvDCCH(){
 	RrcUplinkMessage *msg = gRrcUplinkQueue.read();
-	//UEInfo* ue = msg->msgUep;
-	return msg;
+
+    RlcSdu* sdu= new RlcSdu();
+
+    sdu->payload_length = msg->msgSdu->size();
+    sdu->payload = new char[sdu->payload_length]();
+    memcpy(sdu->payload,msg->msgSdu->begin(),sdu->payload_length);
+    sdu->payload_string = msg->msgSdu->hexstr();
+    sdu->rbid = msg->msgRbid;
+    sdu->urnti = msg->msgUep->mCRNTI;
+    sdu->crnti = msg->msgUep->mCRNTI;
+    msg->msgSdu->clear();
+    delete msg;
+    return sdu;
+
 }
-void URlc::rrcSendRRCConnectionSetup(int urnti,ByteVector sdu)
+void URlc::rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,int sdu_len)
 {
 	//UEInfo *uep = gRrc.findUeByAsnId(&aid);
 	UEInfo *uep = gRrc.findUe(false, urnti);
 	if (uep == NULL) {
-		uep = new UEInfo(urnti);
+        uep = new UEInfo(urnti,crnti);
 		//comment = "UL_CCCH_MessageType_PR_rrcConnectionRequest (new UE)";
 	}
 	else{
@@ -68,25 +113,31 @@ void URlc::rrcSendRRCConnectionSetup(int urnti,ByteVector sdu)
 	//uep->ueSetState(stIdleMode);
 	uep->ueConnectRlc(gRrcDcchConfig, stCELL_FACH);	
 	const std::string descrRrcConnectionSetup("RRC_Connection_Setup_Message");
-	rrcSendCCCH(sdu, descrRrcConnectionSetup);
+    rrcSendCCCH(sdu,sdu_len, descrRrcConnectionSetup);
 }
-void URlc::rrcSendCCCH(ByteVector sdu, std::string desc)
+void URlc::rrcSendCCCH(char* sdu,int sdu_len, std::string desc)
 {
-	writeHighSideCcch(sdu, desc);
+    ByteVector ccchpdu = ByteVector(sdu, sdu_len);
+
+    writeHighSideCcch(ccchpdu, desc);
 }
-void URlc::rrcSendDCCH(ByteVector sdu, int UEid, RbId rbid, std::string desc)
+void URlc::rrcSendDCCH(char* sdu,int sdu_len, UeIdType id_type, int UEid, RbId rbid, std::string desc)
 {
-	int ueidtype = 0;
+    int ueidtype = 0;// =urnti
+    if(id_type == UeIdType::CRNTI)
+        ueidtype =1;
 	UEInfo *uep = gRrc.findUe(ueidtype, UEid);
 	if (uep == NULL) {
 		LOG(INFO) << "Could not find UE with id " << UEid;
 		return;
 	}
-	uep->ueWriteHighSide((RbId)rbid, sdu, desc);
+    ByteVector dcchpdu = ByteVector(sdu, sdu_len);
+
+    uep->ueWriteHighSide((RbId)rbid, dcchpdu, desc);
 }
-vector<ByteVector*> URlc::macReadTx(){
-	vector<ByteVector*> dcch_pdus = flushUE();
-	ByteVector* ccch_pdu = flushQ();
+vector<RlcPdu*> URlc::macReadTx(){
+    vector<RlcPdu*> dcch_pdus = flushUE();
+    RlcPdu* ccch_pdu = flushQ();
 	if (ccch_pdu)
 	{
 		dcch_pdus.push_back(ccch_pdu);

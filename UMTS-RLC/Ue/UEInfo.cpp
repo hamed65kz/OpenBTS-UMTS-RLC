@@ -317,19 +317,20 @@ void UEInfo::ueWriteHighSide(RbId rbid, ByteVector &sdu, string descr)
 	rlc->rlcWriteHighSide(sdu, 0, 0, descr);
 }
 
+
 UEInfo::UEInfo(AsnUeId *wUid) : mUid(*wUid)
 {
-	_initUEInfo();
-	// Allocate a RNTI for this new UE.
-	gRrc.newRNTI(&mURNTI, &mCRNTI);
-	//connectUeRlc(gRrcCcchConfig);	// Not necessary
-	gRrc.addUE(this);
+    _initUEInfo();
+    // Allocate a RNTI for this new UE.
+    gRrc.newRNTI(&mURNTI,&mCRNTI);
+    //connectUeRlc(gRrcCcchConfig);	// Not necessary
+    gRrc.addUE(this);
 }
-UEInfo::UEInfo(uint32_t urnti) {
+UEInfo::UEInfo(uint32_t urnti, uint16_t crnti) {
 	// OK to leave AsnUeId empty.
 	_initUEInfo();
 	mURNTI = urnti;
-	mCRNTI = (urnti & 0xffff);	// We use the same id for both; see newRNTI().
+    mCRNTI = crnti;
 	gRrc.addUE(this);
 }
 // Stupid language.

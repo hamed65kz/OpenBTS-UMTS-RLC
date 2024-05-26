@@ -37,9 +37,9 @@ struct UeTransaction : UEDefs
 class UEInfo : MSUEAdapter
 {
 public:
-	UEInfo(AsnUeId *wUid);
-	UEInfo(uint32_t urnti);
-	void _initUEInfo();
+    UEInfo(AsnUeId *wUid);
+    UEInfo(uint32_t urnti, uint16_t crnti);
+    void _initUEInfo();
 
     int mUeDebugId;
     //bool mStateChange;

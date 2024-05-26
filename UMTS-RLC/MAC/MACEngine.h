@@ -3,7 +3,7 @@
 #include <vector>
 #include "../Utilities/ByteVector.h"
 
-vector<ByteVector*> flushUE();
-ByteVector* flushQ();
+vector<RlcPdu*> flushUE();
+RlcPdu* flushQ();
 
 #endif
