@@ -36,6 +36,7 @@ vector<RlcPdu*> flushUE()
             rlcpdu->urnti = uep->mURNTI;
             rlcpdu->crnti = uep->mCRNTI;
             rlcpdu->payload_string = pdu->hexstr();
+            rlcpdu->isDCCH =true;
             pdu->clear();
             delete pdu;
 
@@ -61,6 +62,7 @@ RlcPdu* flushQ()
     rlcpdu->rbid = -1;
     rlcpdu->urnti = -1;
     rlcpdu->crnti = -1;
+    rlcpdu->isDCCH = false;
     pdu->clear();
     delete pdu;
 

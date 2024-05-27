@@ -1,11 +1,10 @@
 #ifndef URLC_H
 #define URLC_H
 
-#include "RLC/Recv/URlcRecv.h"
-#include "RLC/Tran/URlcTrans.h"
 #include <queue>
-#include "RRC/URRCMessages.h"
 #include <string>
+#include "shareTypes.h"
+#include <vector>
 
 class URlc{
 public:
@@ -21,12 +20,12 @@ public:
     static void rrcSendCCCH(char* sdu,int sdu_len, std::string desc); //sdu  + len // all ccch except rrc conn setup
     static void rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,int sdu_len); //only rrc conn set up
 
-    static vector<RlcPdu*> macReadTx(); // pdu + pdu len + rbid + ueid(crnti/urnti) + cccd/dcch
+    static ::std::vector<RlcPdu*> macReadTx(); // pdu + pdu len + rbid + ueid(crnti/urnti) + cccd/dcch
 
 
 
 private:
-    static std::queue<BitVector*> RxCCCHQueue;
+    static ::std::queue<RlcSdu*> RxCCCHQueue;
 
 };
 #endif

@@ -33,6 +33,7 @@ class RlcSdu{
     int crnti;
     int urnti;
     std::string payload_string;
+    bool isDCCH;
 };
 
 typedef RlcSdu RlcPdu;

@@ -5,7 +5,7 @@
 #include "MAC/MACEngine.h"
 #include "Utilities/Logger.h"
 
-std::queue<BitVector*> URlc::RxCCCHQueue ;
+std::queue<RlcSdu*> URlc::RxCCCHQueue ;
 
 
 void URlc::initRLCConfigs()
@@ -43,14 +43,13 @@ void URlc::macPushUpRXDCCH(char* pdu, int pdu_len, RbId rbid, UeIdType id_type ,
 }
 
 void URlc::macPushUpRxCCCH(char* pdu, int pdu_len){
-    BitVector* ccchpdu;
-    Vector<char> v1 = Vector<char>(pdu_len);
-    for (int j =0; j < pdu_len; j++) {
-      v1[j] = pdu[j];
-    }
-
-    ccchpdu = new BitVector(v1);
-    RxCCCHQueue.push(ccchpdu);
+    RlcSdu* sdu = new RlcSdu();
+    sdu->payload = pdu;
+    sdu->payload_length = pdu_len;
+sdu->rbid=-1;
+sdu->crnti=-1;
+sdu->urnti=-1;
+    RxCCCHQueue.push(sdu);
 }
 
 
@@ -58,22 +57,10 @@ RlcSdu* URlc::rrcRecvCCCH()
 {
 	if (RxCCCHQueue.size() > 0)
 	{
-		BitVector* first = RxCCCHQueue.front();
+        RlcSdu* first = RxCCCHQueue.front();
+        first->isDCCH=false;
 		RxCCCHQueue.pop();
-
-        RlcSdu* sdu= new RlcSdu();
-
-        sdu->payload_length = first->size();
-        sdu->payload = new char[sdu->payload_length]();
-        memcpy(sdu->payload,first->begin(),sdu->payload_length);
-        sdu->payload_string = first->hexstr();
-        sdu->rbid = -1;
-        sdu->urnti = -1;
-        sdu->crnti = -1;
-        first->clear();
-        delete first;
-
-        return sdu;
+        return first;
 	}
 	return nullptr;
 }
@@ -94,6 +81,7 @@ RlcSdu* URlc::rrcRecvDCCH(){
     sdu->rbid = msg->msgRbid;
     sdu->urnti = msg->msgUep->mCRNTI;
     sdu->crnti = msg->msgUep->mCRNTI;
+    sdu->isDCCH=true;
     msg->msgSdu->clear();
     delete msg;
     return sdu;
