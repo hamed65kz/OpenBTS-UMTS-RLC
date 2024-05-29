@@ -46,9 +46,9 @@ void URlc::macPushUpRxCCCH(char* pdu, int pdu_len){
     RlcSdu* sdu = new RlcSdu();
     sdu->payload = pdu;
     sdu->payload_length = pdu_len;
-sdu->rbid=-1;
-sdu->crnti=-1;
-sdu->urnti=-1;
+    sdu->rbid=-1;
+    sdu->crnti=-1;
+    sdu->urnti=-1;
     RxCCCHQueue.push(sdu);
 }
 

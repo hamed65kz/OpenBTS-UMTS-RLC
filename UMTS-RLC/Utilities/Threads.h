@@ -17,15 +17,18 @@
 #ifndef THREADS_H
 #define THREADS_H
 
+#include <assert.h>
+
 #ifdef _WIN32
-//#define HAVE_STRUCT_TIMESPEC // for resolve timespec redefinition,, msvc version should be higher than vs2013
-//#define _TIMESPEC_DEFINED
+#ifndef _INC__MINGW_H        // we dont need below define in qt. _INC__MINGW_H define in Qt _mingw.h, but dont define gcc _mingw.h
+#define _TIMESPEC_DEFINED   // for resolve timespec redefinition,, msvc version should be higher than vs2013
+#endif
 #endif
 
 
 #include <pthread.h>
 #include <iostream>
-#include <assert.h>
+
 
 class Mutex;
 
