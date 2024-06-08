@@ -202,14 +202,20 @@ void UEInfo::ueDisconnectRlc(UEState state)
 		switch (state) {
 		case stCELL_FACH:
 			if (mRlcsCF[i]) {
-				if (mRlcsCF[i] != mRlcsCDch[i]) { delete mRlcsCF[i]; deleted++; }
+				if (mRlcsCF[i] != mRlcsCDch[i]) { 
+					delete 	mRlcsCF[i]; 
+					deleted++; 
+				}
 				mRlcsCF[i] = 0;
 				cnt++;
 			}
 			break;
 		case stCELL_DCH:
 			if (mRlcsCDch[i]) {
-				if (mRlcsCF[i] != mRlcsCDch[i]) { delete mRlcsCDch[i]; deleted++; }
+				if (mRlcsCF[i] != mRlcsCDch[i]) { 
+					delete mRlcsCDch[i];
+					deleted++; 
+				}
 				mRlcsCDch[i] = 0;
 				cnt++;
 			}

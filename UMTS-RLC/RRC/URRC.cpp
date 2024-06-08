@@ -149,6 +149,7 @@ void Rrc::purgeUEs()
 			{
 				LOG(ALERT) << "Deleting " << uep;
 				mUEList.erase(itr);
+				uep->ueDisconnectRlc(UEState::stCELL_FACH);
 				delete uep;
 				if (pre_itr != (mUEList).end())
 				{
