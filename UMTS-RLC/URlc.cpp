@@ -89,6 +89,7 @@ RlcSdu* URlc::rrcRecvDCCH(){
 }
 void URlc::rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,int sdu_len)
 {
+    LOG(INFO) << "rrcSendRRCConnectionSetup urnti = " <<urnti<<" crnti = "<< crnti;
 	//UEInfo *uep = gRrc.findUeByAsnId(&aid);
 	UEInfo *uep = gRrc.findUe(false, urnti);
 	if (uep == NULL) {

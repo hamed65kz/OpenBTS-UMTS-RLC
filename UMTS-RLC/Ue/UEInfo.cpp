@@ -235,7 +235,7 @@ void UEInfo::ueConnectRlc(
 {
 	// Even if we were in DCH state before, we must look for up any new RBs that need RLCs.
 	//if (config == mUeConfig) {return;}	// WRONG!
-	//bool isNewState = (nextState != ueGetState());
+	bool isNewState = false;//(nextState != ueGetState());
 	// Note that when we move to CELL_FACH state we may be leaving RLCs from DCH state on rb 5-15.
 	for (unsigned i = 1; i < config->mNumRB; i++) {	// Skip SRB0
 		RBInfo *rb = config->getRB(i);
@@ -259,9 +259,12 @@ void UEInfo::ueConnectRlc(
 			case stCELL_FACH:
 				// First delete existing if necessary.
 				prev = mRlcsCF[rbid];
-				//if (!isNewState && prev) { continue; }	// Leave previously configured RBs alone.
+				if (!isNewState && prev) { continue; }	// Leave previously configured RBs alone.
 				other = mRlcsCDch[rbid];
-				if (prev && prev != other) { delete prev; }
+				if (prev && prev != other) { 
+					LOG(INFO) << "Delete previous rlc urnti : " << this->mURNTI << " crnti: " << this->mCRNTI << " rbid " << rbid;
+					delete prev;
+				}
 				if (other && other->mDown->mRlcMode == rb->getDlRlcMode() && other->mDown->rlcGetDlPduSizeBytes() == newpdusize) {
 					mRlcsCF[rbid] = other;
 					action = "copied";
@@ -274,9 +277,12 @@ void UEInfo::ueConnectRlc(
 				break;
 			case stCELL_DCH:
 				prev = mRlcsCDch[rbid];
-				//if (!isNewState && prev) { continue; }	// Leave previously configured RBs alone.
+				if (!isNewState && prev) { continue; }	// Leave previously configured RBs alone.
 				other = mRlcsCF[rbid];
-				if (prev && prev != other) { delete prev; }
+				if (prev && prev != other) {
+					LOG(INFO) << "Delete previous rlc urnti : "<<this->mURNTI<<" crnti: "<< this->mCRNTI << " rbid " << rbid;
+					delete prev; 
+				}
 				if (other) printf("PDU sizes: %d %d\n", other->mDown->rlcGetDlPduSizeBytes(), newpdusize);
 				if (other && other->mDown->mRlcMode == rb->getDlRlcMode() && other->mDown->rlcGetDlPduSizeBytes() == newpdusize) {
 					mRlcsCDch[rbid] = other;

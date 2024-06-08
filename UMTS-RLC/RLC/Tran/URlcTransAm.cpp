@@ -2,7 +2,7 @@
 #include "../URlcAm.h"
 #include "../../Utilities/Logger.h"
 
-URlcAm* URlcTransAm::parent() { return dynamic_cast<URlcAm*>(this); }//HKZ dynamic cast
+URlcAm* URlcTransAm::parent() { return static_cast<URlcAm*>(this); }//HKZ dynamic cast
 URlcRecvAm* URlcTransAm::receiver() { return static_cast<URlcRecvAm*>(parent()); }
 
 
@@ -79,7 +79,10 @@ URlcPdu *URlcTransAm::getStatusPdu()
 void URlcTransAm::advanceVTA(URlcSN newvta)
 {
     for ( ; deltaSN(mVTA,newvta) < 0; incSN(mVTA)) {
-        if (mPduTxQ[mVTA]) { delete mPduTxQ[mVTA]; mPduTxQ[mVTA] = NULL; }
+        if (mPduTxQ[mVTA]) {
+            delete mPduTxQ[mVTA];
+            mPduTxQ[mVTA] = NULL;
+        }
     }
 }
 
@@ -96,12 +99,13 @@ void URlcTransAm::processSUFIs2(
     URlcSN sn;
     URlcSN newva = mVTA;	// SN of oldest block nacked by this pdu.
     bool newvaValid = false;
+    //return ;//dad vali kheli tool keshid;
    /* RLCLOG("Sufis before: VTS=%d VTA=%d VSNack=%d NackedBlocksWaiting=%d",
         (int)mVTS,(int)mVTA,(int)mVSNack,mNackedBlocksWaiting);*/
 	char buf[300] = { 0 };
 	sprintf(buf, "Sufis before: VTS=%d VTA=%d VSNack=%d NackedBlocksWaiting=%d", (int)mVTS, (int)mVTA, (int)mVSNack, mNackedBlocksWaiting);
 	PATLOG(LOG_DEBUG, buf);
-
+    //return; // dad;
     while (1) {
         SufiType sufitype = (SufiType) vec->readField(rp,4);
         switch (sufitype) {
@@ -246,9 +250,10 @@ void URlcTransAm::processSUFIs2(
 
 void URlcTransAm::processSUFIs(ByteVector *vec)
 {
+
     size_t rp = 4;
     processSUFIs2(vec,rp);
-
+    //return ;// add for test. khata nadad. dad. dad
     if (mConfig->mPoll.mTimerPoll && mTimer_Poll.active()) {
         // Reset Timer_Poll exactly as per 25.322 9.5 paragraph a.
         // The purpose of the poll timer is to positively insure that
@@ -538,8 +543,11 @@ URlcPdu *URlcTransAm::readLowSidePdu2()
 
 URlcPdu *URlcTransAm::readLowSidePdu()
 {
+
     ScopedLock lock(parent()->mAmLock);
+
     URlcPdu *pdu = readLowSidePdu2();
+
     if (pdu) {
         bool dc = pdu->getBit(0);
         if (dc) {
@@ -564,6 +572,7 @@ URlcPdu *URlcTransAm::readLowSidePdu()
 			PATLOG(LOG_DEBUG, buf);
         }
     }
+
     return pdu;
 }
 

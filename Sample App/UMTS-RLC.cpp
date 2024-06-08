@@ -99,7 +99,6 @@ void *macDCCHRX(void *) {
 }
 void *rrcRxCCCH(void *) {
     while (true) {
-
         RlcSdu *sdu = URlc::rrcRecvCCCH();
         if (sdu != nullptr) {
             cout << "Rx CCCH Pdu Received on RRC\n";
@@ -157,7 +156,7 @@ void *rrcTxDCCH(void *) {
 
 bool rxCCCHPathEnabled = true;
 bool rxDCCHPathEnabled = true;
-bool txPathEnabled = false;
+bool txPathEnabled = true;
 
 bool macEnabled = true;
 bool rrcEnabled = true;
