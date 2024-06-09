@@ -32,10 +32,10 @@ void *macTX(void *) {
             cout << "<Tx Pdu Received on MAC" << " size : " << pdus[i]->payload_length << " paylod : " << pdus[i]->payload_string << "\n";
         }
         for (int i = pdus.size() - 1; i >= 0; i--) {
-            delete pdus[i]->payload;
+            delete[] pdus[i]->payload;
             delete pdus[i];
         }
-        SLEEP(1000);
+        SLEEP(500);
     }
     pthread_exit(0);
     return NULL;
@@ -48,21 +48,21 @@ void *macCCCHRX(void *) {
         if (sendRRCRequest > 0) {
             // SIMULATE SEND  RRC CONN REQ
             // GENERATE SAMPLE URNTI
-            int randUrnti = rand() % 40;
-            if (randUrnti > 30) {
+            int randUrnti = rand() % 4;
+            if (randUrnti > 4) {
                 randUrnti = 1;
             }
-            ccchpdu = new char[2]();
+            ccchpdu = new char[200]();
             ccchpdu[0] = randUrnti;
             ccchpdu[1] = 0;
 
             cout << "Rx CCCH RRC Req Pdu Received on MAC, urnti =" << randUrnti
                  << " , size = 2"  << "\n";
         } else {
-            ccchpdu = new char[2]();
+            ccchpdu = new char[200]();
             cout << "Rx CCCH Pdu Received on MAC\n";
         }
-        URlc::macPushUpRxCCCH(ccchpdu,2);
+        URlc::macPushUpRxCCCH(ccchpdu,200);
         SLEEP(1000);
     }
     pthread_exit(0);
@@ -90,7 +90,7 @@ void *macDCCHRX(void *) {
             RbId rb = 3;
             cout << "Rx DCCH Pdu Received on MAC\n";
             URlc::macPushUpRXDCCH(dcchpdu,filelen - 24, rb,UeIdType::URNTI, UEid);
-            SLEEP(1000);
+            SLEEP(500);
             //}
         }
     }
@@ -109,11 +109,11 @@ void *rrcRxCCCH(void *) {
                 auto crnti = sdu->payload[0];
 
                 URlc::rrcSendRRCConnectionSetup(urnti,crnti, sdu->payload, sdu->payload_length);
-                delete sdu->payload;
+                delete[] sdu->payload;
             }
             delete sdu;
         }
-        SLEEP(1000);
+        SLEEP(500);
     }
     pthread_exit(0);
     return NULL;
@@ -122,19 +122,19 @@ void *rrcRxDCCH(void *) {
     while (true) {
         RlcSdu *sdu = URlc::rrcRecvDCCH();
         cout << "Rx DCCH Pdu Received on RRC\n";
-        delete sdu->payload;
+        delete[] sdu->payload;
         delete sdu;
-        SLEEP(1000);
+        SLEEP(500);
     }
     pthread_exit(0);
 }
 void *rrcTxCCCH(void *) {
     int count = 0;
     while (true) {
-        char *ccchpdu = new char[20]();
+        char *ccchpdu = new char[200]();
         sprintf(ccchpdu, "ccch%6d", count);
-        URlc::rrcSendCCCH(ccchpdu,20,"ccch sdu");
-        SLEEP(1000);
+        URlc::rrcSendCCCH(ccchpdu,200,"ccch sdu");
+        SLEEP(500);
         count++;
     }
     pthread_exit(0);
@@ -143,11 +143,11 @@ void *rrcTxCCCH(void *) {
 void *rrcTxDCCH(void *) {
     int count = 0;
     while (true) {
-        char *dcchpdu = new char[85]();
+        char *dcchpdu = new char[200]();
         sprintf(dcchpdu, "dcch%6d", count);
 
-        URlc::rrcSendDCCH(dcchpdu,85,UeIdType::URNTI, 1, 3, "");
-        SLEEP(1000);
+        URlc::rrcSendDCCH(dcchpdu,200,UeIdType::URNTI, 1, 3, "");
+        SLEEP(500);
         count++;
     }
     pthread_exit(0);
