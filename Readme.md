@@ -113,7 +113,7 @@ It just needs Pthread on Linux. use the below command for installing Pthread.
 
 
 ## Features
-OpenBTS-UMTS-RLC just Support FACH packets.
+OpenBTS-UMTS-RLC just support FACH/RACH packets.
 
 ## Platforms
 OpenBTS-UMTS-RLC compiled successfully with MSVC and MinGW on Windows and with gcc/g++ on Linux
@@ -134,7 +134,7 @@ OpenBTS-UMTS-RLC compiled successfully with MSVC and MinGW on Windows and with g
     Add URlc.h to your main application
     Build your main application
 
-#### QMAKE Build System 
+#### QMake Build System 
 ###### For building the sample app
 
     Open umts-rlc-proj.pro in qt creator and build it
