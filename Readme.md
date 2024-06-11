@@ -13,22 +13,24 @@ It supports both Cmake and Qmake build system.
 
 #### Initialize RLC Configuration
 
-Call it only one time at project startup
+Call it only one time at project startup. you can create multiple data path for different NodeB. 
 ```
-    initRLCConfigs(); 
+    initRLCConfigs(int nodeBCount); 
 ```
 
 #### Push RX CCCH Frame from MAC to RRC
-Call it on each RX CCCH frame received in the MAC layer
+Call it on each RX CCCH frame received in the MAC layer.
+if you have multiple NodeB you should specify its index with nodeBIndex
 ```
-    static void macPushUpRxCCCH(char* bit_pdu, int pdu_len); 
+    static void macPushUpRxCCCH(char* bit_pdu, int pdu_len, int nodeBIndex); 
 ```
 #### Push RX DCCH Frame from MAC to RRC
 Call it on each RX DCCH frame received in the MAC layer
 ```
-    static void macPushUpRXDCCH(char* bit_pdu, int pdu_len, RbId rbid, UeIdType id_type,int UEid);
+    static void macPushUpRXDCCH(char* bit_pdu, int pdu_len, RbId rbid, UeIdType id_type,int UEid, int nodeBIndex);
 ```
-It takes PDU and Radio Bearer index and UEid and UeIdType(CRNTI/URNTI)
+It takes PDU and Radio Bearer index and UEid and UeIdType(CRNTI/URNTI) and 
+if you have multiple NodeB you should specify its index with nodeBIndex
 
 #### RRC get RX CCCH from RLC 
 Call it in the RRC Layer to get Sdu's from RLC
@@ -58,22 +60,26 @@ Call it in the RRC Layer to get Sdu's from RLC
 #### RRC send TX DCCH Through RLC 
  Call it in the RRC Layer for sending DCCH Sdu's through RLC
 ```
-    static void rrcSendDCCH(char* sdu,int sdu_len, UeIdType id_type, int UEid, RbId rbid,std::string desc);
+    static void rrcSendDCCH(char* sdu,int sdu_len, UeIdType id_type, int UEid, RbId rbid,std::string desc, int nodeBIndex);
 ```
  It takes Sdu + id_type(URNTI/CRNTI) + UeId + Readio Bearer + description text to show in logs
+ if you have multiple NodeB you should specify its index with nodeBIndex
  
 #### RRC send TX CCCH Through RLC 
 Call it in RRC Layer for sending CCCH Sdu's (Except RRC Connection Setup) through RLC
 ```
-    static void rrcSendCCCH(char* sdu,int sdu_len, std::string desc);
+    static void rrcSendCCCH(char* sdu,int sdu_len, std::string desc, int nodeBIndex);
 ```
-  It takes Sdu + description text to show in logs
+  It takes Sdu + description text to show in logs.
+  if you have multiple NodeB you should specify its index with nodeBIndex
+
 #### RRC send TX CCCH Through RLC
  Call it in the RRC Layer just for sending RRC Connection Setup Sdu through RLC
 ```
-    static void rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,int sdu_len);
+    static void rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,int sdu_len, int nodeBIndex);
 ```
- It takes Sdu + Ue URNTI and CRNTI
+ It takes Sdu + Ue URNTI and CRNTI.
+ if you have multiple NodeB you should specify its index with nodeBIndex
  
 #### MAC get TX Pdu's from RLC
 

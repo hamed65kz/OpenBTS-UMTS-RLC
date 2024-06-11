@@ -6,7 +6,6 @@ CONFIG -= app_bundle
 
 SOURCES += \
         $$PWD/MAC/MACEngine.cpp \
-        $$PWD/MAC/MACLayer.cpp \
         $$PWD/MAC/TransportBlock.cpp \
         $$PWD/RLC/Configs/URlcConfigAm.cpp \
         $$PWD/RLC/Configs/URlcConfigAmUm.cpp \
@@ -47,7 +46,6 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/MAC/MACEngine.h \
-    $$PWD/MAC/MACLayer.h \
     $$PWD/MAC/TransportBlock.h \
     $$PWD/RLC/Configs/DownlinkRlcStatusInfo.h \
     $$PWD/RLC/Configs/TransmissionRlcDiscard.h \
