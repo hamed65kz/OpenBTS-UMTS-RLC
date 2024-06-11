@@ -209,17 +209,21 @@ void Rrc::addUE(UEInfo *ue)
 }
 
 // If ueidtype is 0, look for URNTI, else CRNTI
-UEInfo *Rrc::findUe(bool ueidtypeCRNTI, unsigned uehandle)
+UEInfo *Rrc::findUe(bool ueidtypeCRNTI, unsigned uehandle, uint16_t mNodeBID)
 {	
 	//ScopedLock lock(mUEListLock);
 	UEInfo *uep=nullptr;
 	for (auto itr = mUEList.begin(); itr == mUEList.end() ? 0 : ((uep = *itr++), 1);){	
 	//RN_FOR_ALL(UEList_t, mUEList, uep) {
 		if (ueidtypeCRNTI) {
-			if (uehandle == uep->mCRNTI) { return uep; }
+			if (uehandle == uep->mCRNTI && mNodeBID == uep->mNodeBID) { 
+				return uep; 
+				}
 		}
 		else {
-			if (uehandle == uep->mURNTI) { return uep; }
+			if (uehandle == uep->mURNTI && mNodeBID == uep->mNodeBID) { 
+				return uep; 
+				}
 		}
 	}
 	return NULL;
@@ -243,22 +247,22 @@ void Rrc::newRNTI(uint32_t *urnti, uint16_t *crnti) {
 // Other than that, I think it is ok to issue a new URNTI every time we get the RRC Initial Connection Request.
 // The UE may also be in idle mode because we goofed up and lost it, but in that case I dont
 // think it matters if we issue a new URNTI or not.
-UEInfo *Rrc::findUeByAsnId(AsnUeId *asnId)
-{
-	{
-		ScopedLock lock(mUEListLock);
-		UEInfo *uep=nullptr;
-		RN_FOR_ALL(UEList_t, mUEList, uep) {
-			// If the whole thing matches just use it.
-			// The UE may identify itself one way (eg IMSI) on the first rrc connection request,
-			// then later use TMSI or P-TMSI.
-			// The UE may identify itself by P-TMSI using a P-TMSI that it obtained from us days ago.
-			// None of that matters; we are only trying to identify identical RRC Intial Connection Requests
-			// from the same UE.
-			if (asnId->eql(uep->mUid)) { return uep; }
-		}
-	}
-	//HKZ-NOT IMPL
-	return NULL;
-}
+//UEInfo *Rrc::findUeByAsnId(AsnUeId *asnId)
+//{
+//	{
+//		ScopedLock lock(mUEListLock);
+//		UEInfo *uep=nullptr;
+//		RN_FOR_ALL(UEList_t, mUEList, uep) {
+//			// If the whole thing matches just use it.
+//			// The UE may identify itself one way (eg IMSI) on the first rrc connection request,
+//			// then later use TMSI or P-TMSI.
+//			// The UE may identify itself by P-TMSI using a P-TMSI that it obtained from us days ago.
+//			// None of that matters; we are only trying to identify identical RRC Intial Connection Requests
+//			// from the same UE.
+//			if (asnId->eql(uep->mUid)) { return uep; }
+//		}
+//	}
+//	//HKZ-NOT IMPL
+//	return NULL;
+//}
 

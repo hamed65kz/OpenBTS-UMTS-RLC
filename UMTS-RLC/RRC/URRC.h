@@ -48,9 +48,9 @@ class Rrc : public UEDefs
     UEList_t mUEList;
 
     // If ueidtype is 0, look for URNTI, else CRNTI
-    UEInfo *findUe(bool ueidtypeCRNTI,unsigned ueid);
-    UEInfo *findUeByUrnti(uint32_t urnti) {return findUe(false,urnti);}
-    UEInfo *findUeByAsnId(AsnUeId *ueid);
+    UEInfo *findUe(bool ueidtypeCRNTI,unsigned ueid, uint16_t mNodeBID);
+    //UEInfo *findUeByUrnti(uint32_t urnti) {return findUe(false,urnti);}
+    //UEInfo *findUeByAsnId(AsnUeId *ueid);
     void purgeUEs();
     void addUE(UEInfo *ue);
 

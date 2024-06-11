@@ -330,19 +330,20 @@ void UEInfo::ueWriteHighSide(RbId rbid, ByteVector &sdu, string descr)
 }
 
 
-UEInfo::UEInfo(AsnUeId *wUid) : mUid(*wUid)
-{
-    _initUEInfo();
-    // Allocate a RNTI for this new UE.
-    gRrc.newRNTI(&mURNTI,&mCRNTI);
-    //connectUeRlc(gRrcCcchConfig);	// Not necessary
-    gRrc.addUE(this);
-}
-UEInfo::UEInfo(uint32_t urnti, uint16_t crnti) {
+//UEInfo::UEInfo(AsnUeId *wUid) : mUid(*wUid)
+//{
+//    _initUEInfo();
+//    // Allocate a RNTI for this new UE.
+//    gRrc.newRNTI(&mURNTI,&mCRNTI);
+//    //connectUeRlc(gRrcCcchConfig);	// Not necessary
+//    gRrc.addUE(this);
+//}
+UEInfo::UEInfo(uint32_t urnti, uint16_t crnti, uint16_t NodeBId) {
 	// OK to leave AsnUeId empty.
 	_initUEInfo();
 	mURNTI = urnti;
     mCRNTI = crnti;
+	mNodeBID = NodeBId;
 	gRrc.addUE(this);
 }
 // Stupid language.
@@ -358,6 +359,7 @@ void UEInfo::_initUEInfo() {
 				 mActivityTime = mHelloTime;
 				 mURNTI = 0;	// We expect these to be set immediately, but cant be too cautious.
 				 mCRNTI = 0;
+				 mNodeBID = 0;
 				 //radioCapability = NULL;
 	}
 

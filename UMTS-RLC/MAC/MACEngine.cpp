@@ -41,6 +41,7 @@ vector<RlcPdu*> flushUE()
                 rlcpdu->rbid = rbid;
                 rlcpdu->urnti = uep->mURNTI;
                 rlcpdu->crnti = uep->mCRNTI;
+                rlcpdu->nodeBId = uep->mNodeBID;
                 rlcpdu->payload_string = pdu->hexstr();
                 rlcpdu->isDCCH =true;
                 pdu->clear();
@@ -54,10 +55,10 @@ vector<RlcPdu*> flushUE()
 	}
 	return pdus;
 }
-RlcPdu* flushQ()
+RlcPdu* flushQ(int nodeBId)
 {
 	// Now we can treat the ccch rlc like any other.
-    ByteVector *pdu = macReadFromCCCH();
+    ByteVector *pdu = macReadFromCCCH(nodeBId);
     if(pdu){
     RlcPdu* rlcpdu= new RlcPdu();
 
@@ -68,6 +69,7 @@ RlcPdu* flushQ()
     rlcpdu->rbid = -1;
     rlcpdu->urnti = -1;
     rlcpdu->crnti = -1;
+    rlcpdu->nodeBId = nodeBId;
     rlcpdu->isDCCH = false;
     pdu->clear();
     delete pdu;

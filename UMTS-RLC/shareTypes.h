@@ -32,6 +32,7 @@ class RlcSdu{
     int rbid;
     int crnti;
     int urnti;
+	int nodeBId;
     std::string payload_string;
     bool isDCCH;
 };

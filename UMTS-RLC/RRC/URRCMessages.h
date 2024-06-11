@@ -99,7 +99,7 @@ class AsnUeId {
 	//void asnParse(ASN::InitialUE_Identity &uid);
 };
 
-void setupDlRlcCCCH();
-void writeHighSideCcch(ByteVector &sdu, const string descr);
-ByteVector * macReadFromCCCH();
+void setupDlRlcCCCH(int nodeBCount);
+void writeHighSideCcch(ByteVector &sdu, const string descr, int nodeBIndex);
+ByteVector * macReadFromCCCH(int nodeBId);
 #endif // ASNUEID_H

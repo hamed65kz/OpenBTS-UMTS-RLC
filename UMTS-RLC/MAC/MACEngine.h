@@ -4,6 +4,6 @@
 #include "../Utilities/ByteVector.h"
 
 vector<RlcPdu*> flushUE();
-RlcPdu* flushQ();
+RlcPdu* flushQ(int nodeBId);
 
 #endif

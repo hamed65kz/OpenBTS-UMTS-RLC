@@ -62,7 +62,7 @@ void *macCCCHRX(void *) {
             ccchpdu = new char[200]();
             cout << "Rx CCCH Pdu Received on MAC\n";
         }
-        URlc::macPushUpRxCCCH(ccchpdu,200);
+        URlc::macPushUpRxCCCH(ccchpdu,200,rand() % 3);
         SLEEP(1000);
     }
     pthread_exit(0);
@@ -74,7 +74,7 @@ void *macDCCHRX(void *) {
         for (size_t i = 1; i <= 110; i++) {
             unsigned int filelen = 0;
             char addr[500] = {0};
-            sprintf(addr, "E:\\project repo\\UMTS RLC\\RLC-CMAKE\\Sample App\\mac_to_rrc_logs\\File_%03d.bin", i);
+            sprintf(addr, ".\\Sample App\\mac_to_rrc_logs\\File_%03d.bin", i);
             printf("\n----%s\n", addr);
             char *data = LoadFromBinaryCharFile(addr, filelen);
 
@@ -89,7 +89,7 @@ void *macDCCHRX(void *) {
             int UEid = 1;
             RbId rb = 3;
             cout << "Rx DCCH Pdu Received on MAC\n";
-            URlc::macPushUpRXDCCH(dcchpdu,filelen - 24, rb,UeIdType::URNTI, UEid);
+            URlc::macPushUpRXDCCH(dcchpdu,filelen - 24, rb,UeIdType::URNTI, UEid,rand() % 3);
             SLEEP(500);
             //}
         }
@@ -108,7 +108,7 @@ void *rrcRxCCCH(void *) {
                 auto urnti = sdu->payload[0];
                 auto crnti = sdu->payload[0];
 
-                URlc::rrcSendRRCConnectionSetup(urnti,crnti, sdu->payload, sdu->payload_length);
+                URlc::rrcSendRRCConnectionSetup(urnti,crnti, sdu->payload, sdu->payload_length,rand() % 3);
                 delete[] sdu->payload;
             }
             delete sdu;
@@ -133,7 +133,7 @@ void *rrcTxCCCH(void *) {
     while (true) {
         char *ccchpdu = new char[200]();
         sprintf(ccchpdu, "ccch%6d", count);
-        URlc::rrcSendCCCH(ccchpdu,200,"ccch sdu");
+        URlc::rrcSendCCCH(ccchpdu,200,"ccch sdu",rand() % 3);
         SLEEP(500);
         count++;
     }
@@ -146,7 +146,7 @@ void *rrcTxDCCH(void *) {
         char *dcchpdu = new char[200]();
         sprintf(dcchpdu, "dcch%6d", count);
 
-        URlc::rrcSendDCCH(dcchpdu,200,UeIdType::URNTI, 1, 3, "");
+        URlc::rrcSendDCCH(dcchpdu,200,UeIdType::URNTI, 1, 3, "",rand() % 3);
         SLEEP(500);
         count++;
     }
@@ -195,12 +195,12 @@ int main() {
     pthread_t rrctxDCCHthread;
     pthread_t mactxthread;
 
-    URlc::initRLCConfigs();
+    URlc::initRLCConfigs(3);
 
     int urnti = 1;
     int crnti = 1;
     char* sdu = new char[2]();
-    URlc::rrcSendRRCConnectionSetup(urnti,crnti, sdu,1);
+    URlc::rrcSendRRCConnectionSetup(urnti,crnti, sdu,1,0);
 
     if (rxCCCHPathEnabled) {
         if (macEnabled) {

@@ -37,14 +37,15 @@ struct UeTransaction : UEDefs
 class UEInfo : MSUEAdapter
 {
 public:
-    UEInfo(AsnUeId *wUid);
-    UEInfo(uint32_t urnti, uint16_t crnti);
+    //UEInfo(AsnUeId *wUid);
+    UEInfo(uint32_t urnti, uint16_t crnti, uint16_t NodeBId);
     void _initUEInfo();
 
     int mUeDebugId;
     //bool mStateChange;
     uint32_t mURNTI; 	// Note: The mURNTI is 12 bits SRNC id + 20 bits UE id.
     uint16_t mCRNTI;	// Used by mac on the phy interface.
+	uint16_t mNodeBID;  // used for distingues between varoius node's ue
     UEState mUeState;
 
 	AsnUeId mUid;			// Self-inits.

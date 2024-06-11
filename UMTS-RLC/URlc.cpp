@@ -6,22 +6,28 @@
 #include "Utilities/Logger.h"
 
 std::queue<RlcSdu*> URlc::RxCCCHQueue ;
+int URlc::mNodeBCount=0;
 
-
-void URlc::initRLCConfigs()
+void URlc::initRLCConfigs(int nodeBCount = 1)
 {
 	gLogInit("openbts-umts", "NOTICE", LOG_LOCAL7);
 	rrcInitCommonCh(UMTS_PRACH_SF,UMTS_SCCPCH_SF);
-	setupDlRlcCCCH();
+    mNodeBCount = nodeBCount;
+	setupDlRlcCCCH(nodeBCount);
 }
-void URlc::macPushUpRXDCCH(char* pdu, int pdu_len, RbId rbid, UeIdType id_type , int UEid){
+void URlc::macPushUpRXDCCH(char* pdu, int pdu_len, RbId rbid, UeIdType id_type , int UEid, int nodeBIndex=0){
 	//URNTI = 0;
     //CRNTI = 1;
+    if (nodeBIndex >= mNodeBCount)
+    {
+        LOG(WARNING) << "NodeB " << nodeBIndex << " doesn exist";
+        return;
+    }
     int ueidtype = 0;// =urnti
     if(id_type == UeIdType::CRNTI)
         ueidtype =1;
 
-	UEInfo *uep = gRrc.findUe(ueidtype, UEid);
+	UEInfo *uep = gRrc.findUe(ueidtype, UEid, nodeBIndex);
 	if (uep == NULL) {
 		LOG(INFO) << "Could not find UE with id " << UEid;
 		cout << " - Could not find UE with id " << UEid;
@@ -42,13 +48,20 @@ void URlc::macPushUpRXDCCH(char* pdu, int pdu_len, RbId rbid, UeIdType id_type ,
     uep->ueWriteLowSide(rbid, dcchpdu, stCELL_FACH);
 }
 
-void URlc::macPushUpRxCCCH(char* pdu, int pdu_len){
+void URlc::macPushUpRxCCCH(char* pdu, int pdu_len, int nodeBIndex=0){
+    if (nodeBIndex >= mNodeBCount)
+    {
+        LOG(WARNING) << "NodeB " << nodeBIndex << " doesn exist";
+        return;
+    }
+
     RlcSdu* sdu = new RlcSdu();
     sdu->payload = pdu;
     sdu->payload_length = pdu_len;
     sdu->rbid=-1;
     sdu->crnti=-1;
     sdu->urnti=-1;
+    sdu->nodeBId = nodeBIndex;
     RxCCCHQueue.push(sdu);
 }
 
@@ -81,19 +94,25 @@ RlcSdu* URlc::rrcRecvDCCH(){
     sdu->rbid = msg->msgRbid;
     sdu->urnti = msg->msgUep->mCRNTI;
     sdu->crnti = msg->msgUep->mCRNTI;
+    sdu->crnti = msg->msgUep->mNodeBID;
     sdu->isDCCH=true;
     msg->msgSdu->clear();
     delete msg;
     return sdu;
 
 }
-void URlc::rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,int sdu_len)
+void URlc::rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,int sdu_len, int nodeBIndex=0)
 {
-    LOG(INFO) << "rrcSendRRCConnectionSetup urnti = " <<urnti<<" crnti = "<< crnti;
+    if (nodeBIndex >= mNodeBCount)
+    {
+        LOG(WARNING) << "NodeB " << nodeBIndex << " doesn exist";
+        return;
+    }
+    LOG(INFO) << "rrcSendRRCConnectionSetup urnti = " <<urnti<<" crnti = "<< crnti<<" nodeB = "<< nodeBIndex;
 	//UEInfo *uep = gRrc.findUeByAsnId(&aid);
-	UEInfo *uep = gRrc.findUe(false, urnti);
+	UEInfo *uep = gRrc.findUe(false, urnti, nodeBIndex);
 	if (uep == NULL) {
-        uep = new UEInfo(urnti,crnti);
+        uep = new UEInfo(urnti,crnti, nodeBIndex);
 		//comment = "UL_CCCH_MessageType_PR_rrcConnectionRequest (new UE)";
 	}
 	else{
@@ -102,34 +121,49 @@ void URlc::rrcSendRRCConnectionSetup(uint32_t urnti, uint16_t crnti,char* sdu,in
 	//uep->ueSetState(stIdleMode);
 	uep->ueConnectRlc(gRrcDcchConfig, stCELL_FACH);	
 	const std::string descrRrcConnectionSetup("RRC_Connection_Setup_Message");
-    rrcSendCCCH(sdu,sdu_len, descrRrcConnectionSetup);
+    rrcSendCCCH(sdu,sdu_len, descrRrcConnectionSetup,  nodeBIndex);
 }
-void URlc::rrcSendCCCH(char* sdu,int sdu_len, std::string desc)
+void URlc::rrcSendCCCH(char* sdu,int sdu_len, std::string desc, int nodeBIndex=0)
 {
+    if (nodeBIndex >= mNodeBCount)
+    {
+        LOG(WARNING) << "NodeB " << nodeBIndex << " doesn exist";
+        return;
+    }
     ByteVector ccchpdu = ByteVector(sdu, sdu_len);
 
-    writeHighSideCcch(ccchpdu, desc);
+    writeHighSideCcch(ccchpdu, desc , nodeBIndex);
 }
-void URlc::rrcSendDCCH(char* sdu,int sdu_len, UeIdType id_type, int UEid, RbId rbid, std::string desc)
+void URlc::rrcSendDCCH(char* sdu,int sdu_len, UeIdType id_type, int UEid, RbId rbid, std::string desc, int nodeBIndex=0)
 {
+    if (nodeBIndex >= mNodeBCount)
+    {
+        LOG(WARNING) << "NodeB " << nodeBIndex << " doesn exist";
+        return;
+    }
+
     int ueidtype = 0;// =urnti
     if(id_type == UeIdType::CRNTI)
         ueidtype =1;
-	UEInfo *uep = gRrc.findUe(ueidtype, UEid);
+	UEInfo *uep = gRrc.findUe(ueidtype, UEid,nodeBIndex);
 	if (uep == NULL) {
-		LOG(INFO) << "Could not find UE with id " << UEid;
+		LOG(INFO) << "Could not find UE with id " << UEid<<" in nodeb "<< nodeBIndex;
 		return;
 	}
     ByteVector dcchpdu = ByteVector(sdu, sdu_len);
 
-    uep->ueWriteHighSide((RbId)rbid, dcchpdu, desc);
+    uep->ueWriteHighSide((RbId)rbid, dcchpdu, desc );
 }
 vector<RlcPdu*> URlc::macReadTx(){
     vector<RlcPdu*> dcch_pdus = flushUE();
-    RlcPdu* ccch_pdu = flushQ();
-	if (ccch_pdu)
-	{
-		dcch_pdus.push_back(ccch_pdu);
-	}
+    for (int i = 0; i < mNodeBCount; i++)
+    {
+        RlcPdu* ccch_pdu = flushQ(i);
+        if (ccch_pdu)
+        {
+            dcch_pdus.push_back(ccch_pdu);
+        }
+    }
+
 	return dcch_pdus;
 }
