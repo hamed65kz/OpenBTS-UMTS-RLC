@@ -40,7 +40,8 @@ Call it in the RRC Layer to get Sdu's from RLC
  It returns just Sdu
  Call it in an infinite loop and on a separate thread.
  
-
+> It is a Blocking read and the thread will be blocked until Rx Sdu
+> arrives.  
 > *Dont forget to release RlcSdu object and its inner memory after analyzing it.*
 
 #### RRC get RX DCCH from RLC 
